@@ -1,0 +1,36 @@
+
+
+ls
+echo
+
+echo -e '203050054.tar.gz\na.out\ncmake-build-debug\nCMakeLists.txt\nREADME.md\nshell_fm.c\nshell_test.c'
+echo
+
+echo -e '203050054.tar.gz\na.out\ncmake-build-debug\nCMakeLists.txt\nREADME.md\nshell_fm.c\nshell_test.c' | grep -i c
+echo
+
+echo -e '203050054.tar.gz\na.out\ncmake-build-debug\nCMakeLists.txt\nREADME.md\nshell_fm.c\nshell_test.c' | grep -i c | grep she
+echo
+
+echo -e "2\n6\n3\n1\n9\n0\n4\n5" > test1.txt
+cat test1.txt
+echo
+
+echo -e "2\n6\n3\n1\n9\n0\n4\n5" | grep -i "[3-6]"
+echo
+
+echo -e "2\n6\n3\n1\n9\n0\n4\n5" | sort | grep -i "[3-6]"
+echo
+
+sort < test1.txt > test2.txt
+cat test2.txt
+echo
+
+echo "Executing 6 `sleep 4` in parallel"
+sleep 4 ; sleep 4 ; sleep 4 ; sleep 4 ; sleep 4 ; sleep 4;
+echo
+
+ls
+head -n100 test1.txt test2.txt
+rm test1.txt test2.txt
+

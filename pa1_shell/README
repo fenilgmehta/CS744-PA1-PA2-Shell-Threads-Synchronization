@@ -1,0 +1,23 @@
+# Shell
+
+### How to Compile
+```sh
+# make sure the Makefile is in the working directory
+make
+```
+
+### How to Run
+```sh
+# First compile and run the below command
+./shell_fm
+```
+
+---
+
+### Debugging
+```sh
+make all_dev
+./shell_fm_dev
+make clean
+```
+
