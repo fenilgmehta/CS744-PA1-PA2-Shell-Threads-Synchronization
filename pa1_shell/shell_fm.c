@@ -20,6 +20,9 @@
 #define printflush(a, ...) { fprintf(a, __VA_ARGS__); fflush(a); }
 #define dbss(a)     printflush(stderr, "%s", a);
 
+typedef int32_t INT;
+typedef int64_t LONG;
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 // TODO: comment this before submitting the code
@@ -33,11 +36,46 @@ const char *str_SIGNAL_SIGINT = "the program is interrupted, do you want to exit
 const char *str_SIGNAL_SIGTERM = "Got SIGTERM-Leaving";
 const char *str_ILLEGAL_COMMAND = "Illegal command or arguments";
 
+// These are just thresh-holds to ensure faster performance and make sure realloc is not called repetitively
+char inputBuffer[2048];
+const int MAX_INPUT_LENGTH = 2048;
+const int MAX_COMMANDS_LENGTH = 32;
 
-typedef int32_t INT;
-typedef int64_t LONG;
+// ---------------------------------------------------------------------------------------------------------------------
 
 void myshell(bool, int *);
+
+
+/* This was written because `scanf` and `read` could not handle cases where EOF
+ * is reached along with the input to be read till a new line character.
+ * Especially the case when the input is taken from a file with last line NOT empty.
+ * Return bool: false if End-Of-File (OR CTRL+D) reached, otherwise true
+ * */
+bool myShellInput(char *userInput) {
+    static char ch;
+
+    char *userInputOld = userInput;
+    ch = getchar();
+#ifdef PRINT_DEBUG_STATEMENTS
+    printflush(stderr, "DEBUG: ch=%d,%c\n", ch, ch);  // DEBUG
+#endif
+
+    while (ch != '\n') {
+        if (ch == (-1)) {
+            *userInput = '\0';
+            return userInput != userInputOld;  // this returns false if not input read
+        }
+        *userInput = ch;
+        ++userInput;
+        ch = getchar();
+#ifdef PRINT_DEBUG_STATEMENTS
+        printflush(stderr, "DEBUG: ch=%d,%c\n", ch, ch);  // DEBUG
+#endif
+    }
+
+    *userInput = '\0';
+    return true;
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -174,19 +212,19 @@ void handle_signals(int signalNum) {
     if (signalNum == SIGINT) {
         // signal 2 - Interrupt the process
         printflush(stdout, "\n%s ", str_SIGNAL_SIGINT);
-        char userChoice[3];
-        fscanf(stdin, "%c", userChoice[0]);
+        char *userChoice = inputBuffer;
+        read(STDIN_FILENO, userChoice, 2048);
+        // fscanf(stdin, "%[^\n]", &userChoice[0]);
         // userChoice[0] = getchar();
-        // printflush(stderr, "userChoice = %c\n", userChoice[0]);
+        // myShellInput(userChoice);
         if (userChoice[0] == 'Y') {
             handleSpawnedProcesses();
             exit(2);  // bash ---> exit(128 + 2);
         }
         // while(userChoice[0] != '\0' && userChoice[0] != '\n' && userChoice[0] != -1) {
         //     userChoice[0] = getchar();
-        //     printflush(stderr, "userChoice = %c\n", userChoice[0]);
+        //     printflush(stderr, "userChoice = %d\n", userChoice[0]);
         // }
-        fflush(stdin);
         printflush(stdout, "%s", str_myShellPrompt);
     } else if (signalNum == SIGTERM) {
         // signal 15
@@ -699,8 +737,7 @@ bool execute_command_v1(struct MyVector_CHAR *parsedString, struct MyVector_CmdP
         }
 
         switch (cmdPID = fork()) {
-            case -1:
-                printflush(stderr, "ERROR: fork() returned -1\n");
+            case -1: printflush(stderr, "ERROR: fork() returned -1\n");
                 break;
 
             case 0:
@@ -763,12 +800,12 @@ bool execute_command_v1(struct MyVector_CHAR *parsedString, struct MyVector_CmdP
                 return false;
 
                 // ALTERNATIVE SOLUTION: https://stackoverflow.com/questions/41230547/check-if-program-is-installed-in-c
-            } else if (exitStatus != 0) {
+            }/* else if (exitStatus != 0) {
                 printflush(stdout, "%s\n", str_ILLEGAL_COMMAND);
 #ifdef PRINT_DEBUG_STATEMENTS
                 printflush(stderr, "DEBUG: 4 exitStatus=%d\n", exitStatus);
 #endif
-            }
+            }*/
         }
     }
     return false;
@@ -809,36 +846,9 @@ void mv_test() {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-/* This was written because `scanf` and `read` could not handle cases where EOF
- * is reached along with the input to be terminated by a new line character.
- * Expecially the case when the input is taken from a file with last line NOT empty.
- * Return bool: false if End-Of-File reached, otherwise true 
- * */
-bool myShellInput(char *userInput) {
-    static char ch;
-
-    char *userInputOld = userInput;
-    ch = getchar();
-    while (ch != '\n') {
-        if (ch == (-1)) {
-            *userInput = '\0';
-            return userInput != userInputOld;  // this returns false if not input read
-        }
-        *userInput = ch;
-        ++userInput;
-        // printflush(stderr, "%c,", ch);  // DEBUG
-        ch = getchar();
-    }
-    *userInput = '\0';
-    return true;
-}
-
 void myshell(bool showPrompt, int *exitCodeToUse) {
-    // These are just thresh-holds to ensure faster performance and make sure realloc is not called repetitively
-    const INT MAX_INPUT_LENGTH = 2048;
-    const INT MAX_COMMANDS_LENGTH = 32;
+    char *userInput = inputBuffer;
 
-    char userInput[MAX_INPUT_LENGTH];
     struct MyVector_CHAR parsedString;
     mv_init_CHAR(&parsedString, MAX_INPUT_LENGTH);
 
@@ -875,13 +885,19 @@ void myshell(bool showPrompt, int *exitCodeToUse) {
         pidlist.n = 0;  // clear the PID list
         userInput[0] = '\0';  // this ensures that blank lines(i.e. NO input) are ignored
 
-        // REFER: https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
-        // REFER: https://stackoverflow.com/questions/8097620/how-to-read-from-input-until-newline-is-found-using-scanf
-        fscanf(stdin, "%[^\n]", userInput);
-        // this is required to read the trailing '\n' character OR know if user has pressed CTRL+D (i.e. getchar() returns -1)
-        if (getchar() == -1 && userInput[0] == '\0') break;
-        // if (! myShellInput(userInput)) break;  // NOTE: this is an all in one solution to above 5 lines, i.e. comments, fscanf and the if condition
-
+        // // REFER: https://www.includehelp.com/c/c-program-to-read-string-with-spaces-using-scanf-function.aspx
+        // // REFER: https://stackoverflow.com/questions/8097620/how-to-read-from-input-until-newline-is-found-using-scanf
+        // fscanf(stdin, "%[^\n]", userInput);
+        // // this is required to read the trailing '\n' character OR know if user has pressed CTRL+D (i.e. getchar() returns -1)
+        // if (getchar() == -1 && userInput[0] == '\0') break;
+        if (!myShellInput(userInput)) {
+            printflush(stdout, "\n");
+            break;  // NOTE: this is an all in one solution to above 5 lines, i.e. comments, fscanf and the if condition
+        }
+#ifdef PRINT_DEBUG_STATEMENTS
+        printflush(stderr, "userInput=%s\n", userInput);
+        printflush(stderr, "userInput=%d\n", userInput[0]);
+#endif
         if (userInput[0] == '\0') continue;  // do NOT do anything if line is empty
 
         if (parse_command(userInput, &parsedString, &cmdlist))
