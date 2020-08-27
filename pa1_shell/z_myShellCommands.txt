@@ -34,3 +34,16 @@ ls
 head -n100 test1.txt test2.txt
 rm test1.txt test2.txt
 
+
+
+
+echo -e "28\n3\n2\n4\n25">test2_expected.txt
+echo -e "28\n2\n25">test3_expected.txt
+
+echo -e "1\n6\n28\n3\n5\n2\n4\n25">test1.txt
+cat test1.txt|grep "[2-4]">test2.txt;grep 2<test1.txt>test3.txt
+
+diff -s test2.txt test2_expected.txt
+diff -s test3.txt test3_expected.txt
+
+rm test1.txt test2.txt test3.txt test2_expected.txt test3_expected.txt
