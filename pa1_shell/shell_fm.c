@@ -570,12 +570,12 @@ bool isCustomFunctionThenExecute(struct Command *cmd) {
         printflush(stderr, "\nuser, system, total = { %ld, %ld, %ld } , clk tck = %ld\n", userModeTicks_after, systemModeTicks_after, totalCpuTicks_after, sysconf(_SC_CLK_TCK))
 #endif
 
-        long userUtilization = 100 * (userModeTicks_after - userModeTicks_before) / (totalCpuTicks_after - totalCpuTicks_before);
-        long systemUtilization = 100 * (systemModeTicks_after - systemModeTicks_before) / (totalCpuTicks_after - totalCpuTicks_before);
+        double userUtilization = 100.0 * (userModeTicks_after - userModeTicks_before) / (totalCpuTicks_after - totalCpuTicks_before);
+        double systemUtilization = 100.0 * (systemModeTicks_after - systemModeTicks_before) / (totalCpuTicks_after - totalCpuTicks_before);
         // long userUtilization = 100 * userModeTicks_before / totalCpuTicks_before;
         // long systemUtilization = 100 * systemModeTicks_before / totalCpuTicks_before;
-        printflush(stdout, "user mode cpu percentage: %ld%%\n", userUtilization);
-        printflush(stdout, "system mode cpu percentage: %ld%%\n", systemUtilization)
+        printflush(stdout, "user mode cpu percentage: %.2lf%%\n", userUtilization);
+        printflush(stdout, "system mode cpu percentage: %.2lf%%\n", systemUtilization)
         exit(0);
     } else if (strcmp(cmd->command.arr[0], "checkresidentmemory") == 0) {
         // ps --no-headers --format rss PID
