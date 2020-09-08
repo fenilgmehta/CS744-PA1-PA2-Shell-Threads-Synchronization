@@ -1,14 +1,11 @@
-#include <pthread.h>
+#include "cs_thread.h"
 
 struct barrier_t
 {
-    /*
-        TODO
-        Barrier related variables
-    */
+    // Barrier related variables
     int numThreads, waitCount;
-    pthread_mutex_t numMutex;
-    
+    struct lock lockNum, lockSecond;
+    struct condition conditionThreadWait;
 };
 
 void barrier_init(struct barrier_t *barrier, int nthreads);
