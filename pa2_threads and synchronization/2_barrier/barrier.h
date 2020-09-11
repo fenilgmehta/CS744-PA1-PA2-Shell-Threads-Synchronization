@@ -4,7 +4,7 @@ struct barrier_t
 {
     // Barrier related variables
     int numThreads, waitCount;
-    struct lock lockNum, lockSecond;
+    struct lock lockMaster, lockOne, lockSecondAndLater;
     struct condition conditionThreadWait;
 };
 

@@ -7,52 +7,42 @@ void barrier_init(struct barrier_t *barrier, int nthreads)
 {
     barrier->numThreads = nthreads;
     barrier->waitCount = 0;
-    lock_init(&(barrier->lockNum));
-    lock_init(&(barrier->lockSecond));
+    lock_init(&(barrier->lockMaster));
+    lock_init(&(barrier->lockOne));
+    lock_init(&(barrier->lockSecondAndLater));
     cond_init(&(barrier->conditionThreadWait));
     return;
 }
 
 void barrier_wait(struct barrier_t *barrier)
 {
-    int isMaster = 1;
-
     // REFER: https://www.geeksforgeeks.org/condition-wait-signal-multi-threading/
-    lock_acquire(&(barrier->lockNum));
-    if(barrier->waitCount == 0) {
-        barrier->waitCount = 1;
-
-        lock_acquire(&(barrier->lockSecond));
-        // printf("\nMASTER: thread ID = %d ---> %d, %d\n", pthread_self(), barrier->numThreads, barrier->waitCount);  // DEBUG
-        while(1 <= barrier->waitCount && barrier->waitCount < barrier->numThreads) {
-            // printf("(%d, %d)\n", barrier->waitCount, barrier->numThreads); fflush(stdout);  // DEBUG
-            cond_wait(&(barrier->conditionThreadWait), &(barrier->lockNum));
-        }
-        // printf("\nDONE\n"); fflush(stdout);  // DEBUG
-        lock_release(&(barrier->lockSecond));
-    } else {
-        isMaster = 0;
-        ++(barrier->waitCount);
-        cond_signal(&(barrier->conditionThreadWait), &(barrier->lockNum));
-        // printf("* "); fflush(stdout);  // DEBUG
-    }
-    lock_release(&(barrier->lockNum));
-
-    if(!isMaster) {
-        // * ASSUMING: the below lock and unlock take negligible time
-        // * AVAILABLE time to lock and unlock "barrier->lockSecond"
-        //   by all threads except master = (2.5 - 1) = 1.5 seconds
-
-        while(1 <= barrier->waitCount && barrier->waitCount <= barrier->numThreads) sleep(1);
-        // printf("a"); fflush(stdout);  // DEBUG
-        lock_acquire(&(barrier->lockSecond));
-        lock_release(&(barrier->lockSecond));
-        // printf("b\n"); fflush(stdout);  // DEBUG
-        sleep(1.5);
-    } else {
+    lock_acquire(&(barrier->lockMaster));
+    ++(barrier->waitCount);
+    if(barrier->waitCount == barrier->numThreads) {
+        lock_acquire(&(barrier->lockOne));
+        cond_signal(&(barrier->conditionThreadWait), &(barrier->lockOne));
+        lock_release(&(barrier->lockOne));
+        // NOTE: this loop ensures that NO thread is able to start the work for
+        //       next call to barrier_wait(...) unless every thread except the last
+        //       thread leaves this function.
+        while(barrier->waitCount != 2) sched_yield();
         barrier->waitCount = 0;
-        sleep(2.5);
-    }
+        lock_release(&(barrier->lockMaster));
+    } else if (barrier->waitCount == 1) {
+        lock_acquire(&(barrier->lockSecondAndLater));
+        lock_acquire(&(barrier->lockOne));
 
+        lock_release(&(barrier->lockMaster));
+        cond_wait(&(barrier->conditionThreadWait), &(barrier->lockOne));
+
+        lock_release(&(barrier->lockOne));
+        lock_release(&(barrier->lockSecondAndLater));
+    } else {
+        lock_release(&(barrier->lockMaster));
+        lock_acquire(&(barrier->lockSecondAndLater));
+        --(barrier->waitCount);  // NOTE: this statement will only decrement the waitCount "N-2" times
+        lock_release(&(barrier->lockSecondAndLater));
+    }
     return;
 }
