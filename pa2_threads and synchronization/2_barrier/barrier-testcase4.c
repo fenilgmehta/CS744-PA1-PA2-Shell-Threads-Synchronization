@@ -52,6 +52,7 @@ void *ThreadRoutine(void *arg)
 		barrier_wait(&barrier2);
 	}
 
+	pthread_exit(NULL);
 }
 
 int main()

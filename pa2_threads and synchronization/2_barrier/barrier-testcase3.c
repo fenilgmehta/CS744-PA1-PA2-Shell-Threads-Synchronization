@@ -33,6 +33,7 @@ void *ThreadRoutine(void *arg)
 			exit(1);
 		}
 	}
+	pthread_exit(NULL);
 }
 
 int main()
