@@ -1,7 +1,7 @@
 time between two successive prints
-tortoise speed per ms
-hare speed per ms
-hare sleep time in ms
+tortoise speed per unit time
+hare speed per unit time
+hare sleep time in unit time
 minimum distance between hare and turtle when turtle will sleep
 finish distance
 Number of time god intervene(N)
