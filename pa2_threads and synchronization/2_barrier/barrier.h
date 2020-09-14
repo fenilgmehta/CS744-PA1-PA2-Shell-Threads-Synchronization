@@ -3,7 +3,7 @@
 struct barrier_t
 {
     // Barrier related variables
-    int numThreads, waitCount;
+    long int numThreads, waitCount;
     struct lock lockMaster, lockOne, lockSecondAndLater;
     struct condition conditionThreadWait;
 };

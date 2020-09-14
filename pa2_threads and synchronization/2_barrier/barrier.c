@@ -17,6 +17,8 @@ void barrier_init(struct barrier_t *barrier, int nthreads)
 void barrier_wait(struct barrier_t *barrier)
 {
     // REFER: https://www.geeksforgeeks.org/condition-wait-signal-multi-threading/
+    if(barrier->numThreads <= 1) return;
+
     lock_acquire(&(barrier->lockMaster));
     ++(barrier->waitCount);
     if(barrier->waitCount == barrier->numThreads) {
