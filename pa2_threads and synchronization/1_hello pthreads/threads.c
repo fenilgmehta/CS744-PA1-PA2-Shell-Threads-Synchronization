@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<pthread.h>
+#include<unistd.h>
 
 #define printflush(a, ...) { fprintf(a, __VA_ARGS__); fflush(a); }
 
@@ -81,6 +82,8 @@ int main(int argc, char const *argv[]) {
     printf("%d\n", counter);
     fflush(stdout);
 
-    sleep(10000);  // TODO: do we remove this
+    // NOTE: do NOT remove this, this is used to evaluate the program
+    //       and see if the threads spawned have been reaped
+    sleep(10000);
     return 0;
 }

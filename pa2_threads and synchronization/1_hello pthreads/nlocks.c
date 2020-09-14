@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<pthread.h>
 #include<stdint.h>
+#include<unistd.h>
 
 #define printflush(a, ...) { fprintf(a, __VA_ARGS__); fflush(a); }
 const int32_t THOUSAND = 1000;
@@ -19,7 +20,6 @@ void* increment_data_1000(void *ptr) {
     // REFER: https://stackoverflow.com/questions/26805461/why-do-i-get-cast-from-pointer-to-integer-of-different-size-error
     // REFER: https://stackoverflow.com/questions/1845482/what-is-uintptr-t-data-type
     uintptr_t thread_num = (uintptr_t) ptr;
-    // printflush(stderr, "THREAD num = %d\n", thread_num);  // TODO: DEBUG: remove this
 
     for(int i = 0; i < THOUSAND; ++i) {
         pthread_mutex_lock(&data_lock[thread_num]);
@@ -77,6 +77,8 @@ int main(int argc, char const *argv[]) {
     }
     fflush(stdout);
     
-    sleep(10000);  // TODO: do we remove this
+    // NOTE: do NOT remove this, this is used to evaluate the program
+    //       and see if the threads spawned have been reaped
+    sleep(10000);
     return 0;
 }
