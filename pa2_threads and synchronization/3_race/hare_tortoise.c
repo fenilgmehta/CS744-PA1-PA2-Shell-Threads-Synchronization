@@ -60,7 +60,7 @@ struct Repositioning {
 	int time; 			// At what time god interrupt's
 	int distance;		// How much does god move any of the player. 
 							// distance can be negetive or positive.
-							// using this distance if any of players position is less than zero then bring him to start line.
+							// using this distance if any of players position is less than zero then bring him to start line. <--- IMPORTANT
 							// If more than finish_distance then make him win.
 							// If time is after completion of game than you can ignore it as we will already have winner.
 };
@@ -94,6 +94,8 @@ char check_winner(struct race *race) {
 	// NOTE from PDF: ​If hare and turtle cross the finish line at the same
 	// time unit then we’ll let the turtle win,because slow and steady wins
 	// the race, in stories and in assignments!
+	if(race->mCalculatedWinner != '\0') return race->mCalculatedWinner;
+
 	if(race->mTurtlePosition >= race->finish_distance) {
 		race->mCalculatedWinner = 'T';
 	} else if (race->mHarePosition >= race->finish_distance) {
@@ -239,6 +241,14 @@ void* Randomizer(void *arg) {
 			}
 			indexRandomizer += 1;
 		}
+		// NOTE: this is important because if the randomizer moves the Hare ahead
+		//       of the finish line, then Hare become the winner even if the turtle
+		//       crosses by the finish line by the end of that time unit.
+		// Example: Turtle at 900 (Speed=200), Hare at 950 (Speed=40) but will continue to
+		//          sleep for 5 unit time. If randomizer intervens and move Hare to 1010
+		//          (finish line = 1000), then Hare wins even if the turtle crosses the
+		//          finish line after the time unit finishes.
+		check_winner(r);
 		my_barrier_wait(&(r->mBarrierSync));  // barrier 4
 		my_barrier_wait(&(r->mBarrierSync));  // barrier 5a
 		my_barrier_wait(&(r->mBarrierSync));  // barrier 5b
