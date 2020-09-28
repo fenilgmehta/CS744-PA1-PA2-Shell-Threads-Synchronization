@@ -26,11 +26,11 @@ team_t team = {
     /* Team name */
     "team name",
     /* First member's full name */
-    "member 1",
+    "Fenil Mehta",
     /* First member's email address */
-    "member_1@cse.iitb.ac.in",
+    "fenilgmehta@cse.iitb.ac.in",
     /* Second member's full name (leave blank if none) */
-    "member 2",
+    "Vipin Mahawar",
     /* Second member's email address (leave blank if none) */
     "member_2@cse.iitb.ac.in"
 };
@@ -53,8 +53,8 @@ void *init_mem_sbrk_break = NULL;
 int mm_init(void)
 {
 	
-	//This function is called every time before each test run of the trace.
-	//It should reset the entire state of your malloc or the consecutive trace runs will give wrong answer.	
+	// This function is called every time before each test run of the trace.
+	// It should reset the entire state of your malloc or the consecutive trace runs will give wrong answer.	
 	
 
 	/* 
@@ -63,7 +63,7 @@ int mm_init(void)
 	 * This function will be called multiple time in the driver code "mdriver.c"
 	 */
 	
-    return 0;		//Returns 0 on successfull initialization.
+    return 0;		// Returns 0 on successfull initialization.
 }
 
 //---------------------------------------------------------------------------------------------------------------
@@ -84,11 +84,11 @@ void *mm_malloc(size_t size)
 	if(size <= 0){		// Invalid request size
 		return NULL;
 	}
-	size = ((size+7)/8)*8;		//size alligned to 8 bytes
+	size = ((size+7)/8)*8;		// size alligned to 8 bytes
 	
-	return mem_sbrk(size);		//mem_sbrk() is wrapper function for the sbrk() system call. 
-								//Please use mem_sbrk() instead of sbrk() otherwise the evaluation results 
-								//may give wrong results
+	return mem_sbrk(size);		// mem_sbrk() is wrapper function for the sbrk() system call. 
+								// Please use mem_sbrk() instead of sbrk() otherwise the evaluation results 
+								// may give wrong results
 }
 
 
