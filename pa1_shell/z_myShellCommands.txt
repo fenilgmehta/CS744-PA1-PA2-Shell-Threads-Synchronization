@@ -1,4 +1,8 @@
 
+echo -e "\n-------------+-------------+-------------\n"
+
+echo "TESTING: pipe |, redirection (< > >>), quoted text (\", '), grep, sort, cat"
+echo
 
 ls
 echo
@@ -12,30 +16,64 @@ echo
 echo -e '203050054.tar.gz\na.out\ncmake-build-debug\nCMakeLists.txt\nREADME.md\nshell_fm.c\nshell_test.c' | grep -i c | grep she
 echo
 
+echo "Un-Sorted range [2, 6, 3, 1, 9, 0, 4, 5]"
 echo -e "2\n6\n3\n1\n9\n0\n4\n5" > test1.txt
 cat test1.txt
 echo
 
+echo "Un-Sorted range [3, 6]"
 echo -e "2\n6\n3\n1\n9\n0\n4\n5" | grep -i "[3-6]"
 echo
 
+echo "Sorted range [3, 6]"
 echo -e "2\n6\n3\n1\n9\n0\n4\n5" | sort | grep -i "[3-6]"
 echo
 
+echo "Sorted test1.txt content in test2.txt"
 sort < test1.txt > test2.txt
 cat test2.txt
+echo
+
+echo -e "\n-------------+-------------+-------------\n"
+
+echo "TESTING: parallel execution"
+echo
+
+date
 echo
 
 echo "Executing 6 `sleep 4` in parallel"
 sleep 4 ; sleep 4 ; sleep 4 ; sleep 4 ; sleep 4 ; sleep 4;
 echo
 
+date
+echo
+
+echo -e "\n-------------+-------------+-------------\n"
+
+echo "TESTING: ls, head, rm, listFiles, sortFile"
+echo
+
 ls
+echo
 head -n100 test1.txt test2.txt
 rm test1.txt test2.txt
+echo
 
+listFiles
+cat files.txt
+echo
 
+echo "Before and After using `sortFile` command"
+echo -e "2\n6\n3\n1\n123\n9\n0\n4\n5" > test1.txt
+cat test1.txt
+echo
+sortFile test1.txt
 
+echo -e "\n-------------+-------------+-------------\n"
+
+echo "TESTING: testing special character operations without spacing them: quoted text, pipe, redirection, semicolon"
+echo
 
 echo -e "28\n3\n2\n4\n25">test2_expected.txt
 echo -e "28\n2\n25">test3_expected.txt
@@ -44,6 +82,13 @@ echo -e "1\n6\n28\n3\n5\n2\n4\n25">test1.txt
 cat test1.txt|grep "[2-4]">test2.txt;grep 2<test1.txt>test3.txt
 
 diff -s test2.txt test2_expected.txt
+echo
 diff -s test3.txt test3_expected.txt
 
 rm test1.txt test2.txt test3.txt test2_expected.txt test3_expected.txt
+
+echo -e "\n-------------+-------------+-------------\n"
+
+echo "TESTING: see if last line is executed without putting a new line at the end of the file"
+echo
+echo "Last Line without NEW LINE"
