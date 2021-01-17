@@ -1,25 +1,32 @@
-# Shell
+# CS 744 - Assignment 1 - Custom Shell
+
+- [Problem Statement](./Problem%20Statement.pdf)
+
+
+## Student Details
+
+* Name: Fenil Mehta
+* Roll Number: 203050054
 
 <!-- ----------------------------------------------------------------------------------- -->
 
 ## Usage
 
-#### How to Compile
 ```sh
+### Compile ###
 # make sure the Makefile is in the working directory
 make
-```
 
-#### How to Run
-```sh
-# First compile and run the below command
+### Run / Execute ###
+# Execute the below command
 ./shell_fm
-```
 
----
+### Clean compiled binaries ###
+make clean
 
-#### Debugging
-```sh
+# ------------------------------
+
+### Debugging ###
 make all_dev
 ./shell_fm_dev
 make clean
@@ -41,11 +48,12 @@ make clean
 - `exit` - to stop the execution of the shell
 - `CTRL+C` - ask the user if they want to exit the shell or continue using it
 - `executeCommands` - pass a text file as a command line parameter having a list of commands(new line separated) supported by this shell which are to be executed in a top down fashion
-- **NOTE:** if a wrong command is there in the file used for `executeCommands` command, then some unknown problem happens and the project re-executes the after the line having the wrong command. See the example of wrong command below:
-  ```
-  echo -e '$ wrongCommand "Execution continues from the file even if wrong command is encountered"\n'
-  wrongCommand "Execution continues from the file even if wrong command is encountered"
-  ```
+- **NOTE:** if a wrong command is there in the file used for `executeCommands` command, then some unknown problem happens and the project re-executes the line after the line having the wrong command. See the example of wrong command below:
+    ```
+    echo -e '$ wrongCommand "Execution continues from the file even if wrong command is encountered"\n'
+    wrongCommand "Execution continues from the file even if wrong command is encountered"
+    ```
+
 <!-- 
 # TODO: add the below content to the code
 

@@ -1,11 +1,11 @@
-# CS744 - Assignment 2 - Threads and Synchronization
+# CS 744 - Assignment 2 - Threads and Synchronization
 
-### Student Details
+## Student Details
 
 * Name: Fenil Mehta
 * Roll Number: 203050054
 
-### Compile and Execution Instructions/Commands
+## Compile and Execution Instructions/Commands
 
 #### Part 3 - Hare and Turtle
 

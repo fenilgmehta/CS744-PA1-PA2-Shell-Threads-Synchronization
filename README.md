@@ -1,15 +1,18 @@
-# CS744 - Design and Engineering of Computing Systems
+# CS 744 - Design and Engineering of Computing Systems
+
+- **Subject** - Design and Engineering of Computing Systems (CS 744)
+
+- **Student Details**
+    - 203050054 - Fenil Mehta
 
 
-### Student Details
+## Assignments
 
-* Name: Fenil Mehta
-* Roll Number: 203050054
+#### Click on the below links to view more information about each assignment
 
+- [First Program - q1.c](./q1.c)
 
-### Assignments - This repository has all the assignments of CS744
+- **[Assignment 1](./pa1_shell)** - Write a custom Shell in C
 
-* [First Program - q1.c](./q1.c)
-* [Assignment 1 - Shell](./pa1_shell)
-* [Assignment 2 - Threads and Synchronization](./pa2_threads%20and%20synchronization)
+- **[Assignment 2](./pa2_threads%20and%20synchronization)** - Threads and Synchronization
 
